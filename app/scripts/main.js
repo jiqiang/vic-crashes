@@ -73,11 +73,65 @@
   }
 
   // Your custom JavaScript goes here
+  var svgRect = document.getElementById("accidents_count").getBoundingClientRect();
+
+  var svg = d3.select("#accidents_count"),
+      margin = {
+        top: 20,
+        right: 20,
+        bottom: 30,
+        left: 50
+      },
+      width = svgRect.width - margin.left - margin.right,
+      height = svgRect.height - margin.top - margin.bottom,
+      g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var parseTime = d3.timeParse("%H:%M:%S");
+
+  var x = d3.scaleTime().rangeRound([0, width]);
+  var y = d3.scaleLinear().rangeRound([height, 0]);
+
+  var line = d3.line()
+      .x((d) => x(d.time_of_day))
+      .y((d) => y(d.num_of_accidents));
+
+  var data = [];
   axios.get('http://api.jiqiang.me/viccrashes/accidents/count')
     .then((response) => {
       console.log(response);
+
+      for (var i = 0; i < response.data.length; i++) {
+        data.push({
+          num_of_accidents: response.data[i].num_of_accidents,
+          time_of_day: parseTime(response.data[i].time_of_day)
+        });
+      }
+
+      x.domain(d3.extent(data, (d) => d.time_of_day));
+      y.domain(d3.extent(data, (d) => d.num_of_accidents));
+
+      g.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(d3.timeHour));
+
+      g.append("g")
+        .call(d3.axisLeft(y));
+
+      g.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 1.5)
+        .attr("d", line);
+
     })
     .catch((error) => {
       console.log(error);
-    })
+    });
+
+
+
+
 })();
