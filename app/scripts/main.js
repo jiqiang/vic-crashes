@@ -91,13 +91,9 @@
   var x = d3.scaleTime().rangeRound([0, width]);
   var y = d3.scaleLinear().rangeRound([height, 0]);
 
-  var line = d3.line()
-      .x((d) => x(d.time_of_day))
-      .y((d) => y(d.num_of_accidents));
-
   var data = [];
 
-  axios.get('http://api.jiqiang.me/viccrashes/count?year=2017')
+  axios.get('http://api.jiqiang.me/viccrashes/count?year=2013')
     .then((response) => {
       console.log(response);
 
@@ -118,14 +114,13 @@
       g.append("g")
         .call(d3.axisLeft(y));
 
-      g.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 1.5)
-        .attr("d", line);
+      g.selectAll(".dot")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", (d) => x(d.time_of_day))
+        .attr("cy", (d) => y(d.num_of_accidents))
+        .attr("r", 2);
 
     })
     .catch((error) => {
