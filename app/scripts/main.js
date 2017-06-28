@@ -96,7 +96,8 @@
       .y((d) => y(d.num_of_accidents));
 
   var data = [];
-  axios.get('http://api.jiqiang.me/viccrashes/accidents/count')
+
+  axios.get('http://api.jiqiang.me/viccrashes/count?year=2017')
     .then((response) => {
       console.log(response);
 
