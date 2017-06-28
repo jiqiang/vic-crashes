@@ -38,5 +38,7 @@
   "eslintConfig": {
     "extends": "google"
   },
-  "dependencies": {}
+  "dependencies": {
+    "bulma": "^0.4.2"
+  }
 }
